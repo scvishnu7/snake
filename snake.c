@@ -87,11 +87,22 @@ void printText(int x, int y, char *text) {
 
 void drawCircle(int x, int y, int r){
 //	printf("drawCicle\n");
+//	glBegin(GL_LINE_LOOP);
+//		glVertex2f(x-r,y-r);
+//		glVertex2f(x+r,y-r);
+//		glVertex2f(x+r,y+r);
+//		glVertex2f(x-r,y+r);
+	
+	int i;
+	float tx,ty;
+	float thita=0;
+	float incrThita = 12*3.1415/180; 
 	glBegin(GL_LINE_LOOP);
-		glVertex2f(x-r,y-r);
-		glVertex2f(x+r,y-r);
-		glVertex2f(x+r,y+r);
-		glVertex2f(x-r,y+r);
+	for(i=0;i<30;i++){
+		tx =x+r*sin(thita+incrThita);
+		ty = y+r*cos(thita+=incrThita);
+		glVertex2f(tx,ty);
+	}
 	glEnd();
 	glFlush();
 }
@@ -155,45 +166,52 @@ void display(void){
 void idleAnimiation(void){
 	if(!isPause){
 	//glPushMatrix();
-		glColor3f(0.0,0.0,0.0);
-		drawCircle(xs[0], ys[0],snakeWidth); //erase
-		glColor3f(1.0,1.0,1.0);
-		drawCircle(xs[1],ys[1],snakeWidth);
 		int i=0;
-		for(i=0;i<snakeLength-1;i++){
-			xs[i]=xs[i+1];
-			ys[i]=ys[i+1];
-		}
-		xs[snakeLength-1] = (gridX + xs[snakeLength-1]+incrX)%gridX;
-		ys[snakeLength-1] = (gridY + ys[snakeLength-1]+incrY)%gridY;
+		int newx, newy;
+		newx = (gridX +xs[snakeLength-1]+incrX)%gridX;
+		newy = (gridY +ys[snakeLength-1]+incrY)%gridY;
 
-		if( abs(xs[snakeLength-1]-foodX)<snakeWidth*2 && abs(ys[snakeLength-1]-foodY)<snakeWidth*2){
+
+                for(i=0;i<snakeLength-1;i++){
+                    if( abs(xs[i]-newx)<snakeWidth*2 && abs(ys[i]-newy)<snakeWidth*2) {
+                        //dead condition
+                    	printf("Sorry! Don't bite ownself\nYour are Dead");
+                    	printText(2, gridY/2,"Sorry! Don't bite ownself$");
+                    	sleep(1);
+                    	exit(0);
+                    }
+		}
+
+		if( abs(newx-foodX)<snakeWidth*2 && abs(newy-foodY)<snakeWidth*2){
 				score++;
 //				printf("Your Score = %d\n",score);
 				char text[50];
 				sprintf(text,"Score = %d",score);
 				printText(10, -3,text);
 				drawFood();
+				drawCircle(newx,newy,snakeWidth);
 				// what about making it longer
-				//snakeLength++;
+				xs[snakeLength]=newx;
+				ys[snakeLength]=newy;
+				snakeLength++;
 				// assuming no one could reach 100 + 
 				pauseTime -= 50;
-			}
+		}else{
+                     glColor3f(0.0,0.0,0.0);
+                     drawCircle(xs[0], ys[0],snakeWidth); //erase
+                     glColor3f(1.0,1.0,1.0);
+                     drawCircle(xs[1],ys[1],snakeWidth);
+                for(i=0;i<snakeLength-1;i++){
+                       xs[i]=xs[i+1];
+                       ys[i]=ys[i+1];
+                  }
+                  xs[snakeLength-1] = (gridX + xs[snakeLength-1]+incrX)%gridX;
+                  ys[snakeLength-1] = (gridY + ys[snakeLength-1]+incrY)%gridY;
+		}// end else
 
-		for(i=0;i<snakeLength-1;i++){	
-			if( abs(xs[i]-xs[snakeLength-1])<snakeWidth*2 && abs(ys[i]-ys[snakeLength-1])<snakeWidth*2){
-				//dead condition
-				printf("Sorry! Don't bite ownself\nYour are Dead now\n");
-				printText(2, gridY/2,"Sorry! Don't bite ownself\nYour are Dead now\n");
-				sleep(1);
-				exit(0);
-			}			
-
-			drawCircle(xs[i],ys[i],snakeWidth);
-			
-		}
+		drawCircle(xs[i],ys[i],snakeWidth);
 		glFlush();
-	}
+		}
 		usleep(pauseTime);
 		//glPopMatrix();
 		//glutSwapBuffers();
