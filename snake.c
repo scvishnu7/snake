@@ -28,7 +28,7 @@ char *prevText;
 int incrX=2; // 1,-1 or 0 
 int incrY=0;	//1, -1 or 0
 
-int snakeLength = 15;
+int snakeLength = 10;
 
 void keyboard(unsigned char key, int x, int y);
 void display(void);
