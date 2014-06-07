@@ -13,6 +13,12 @@
 #define snakeMaxSize 100
 #define snakeWidth 1
 
+#define countToGiveVolatileFood 5
+#define lifeOfVolatileFood 5
+#define VolatileFoodScoreRatio 10
+#define scoreRatio 2
+#define SizeOfVolatileFood 10
+
 int isPause=0;
 
 int xs[snakeMaxSize];
@@ -22,11 +28,10 @@ int foodX;
 int foodY;
 
 int animCount=0;
-int lifeOfVolatileFood=5;// 5 Sec
 int volatileFoodX;
 int volatileFoodY;
 int volatileFoodR; //size of the volatile food
-int countToGiveVolatileFood=5; // in every five food new volatile food will be presented after the presented on is eaten of disapears.
+int stepsRemaningForVolatileFood= countToGiveVolatileFood; // in every five food new volatile food will be presented after the presented on is eaten of disapears.
 
 int pauseTime=59999;
 int score = 0;
@@ -201,19 +206,19 @@ void display(void){
 void idleAnimiation(void){
 	if(!isPause){
 
-	if(countToGiveVolatileFood==0){
+	if(stepsRemaningForVolatileFood==0){
 		eraseVolatileFood();
-		countToGiveVolatileFood = 5;
+		stepsRemaningForVolatileFood = countToGiveVolatileFood;
 		printf("Present volatile food \n");
 		volatileFoodX = rand()%gridX;
 		volatileFoodY = rand()%gridY;
-		volatileFoodR = 10;
+		volatileFoodR = SizeOfVolatileFood;
 		drawVolatileFood();
 	}
 		
 	//glPushMatrix();
 	if( volatileFoodR>0){
-		animCount = (animCount+1)%10;
+		animCount = (animCount+1)%lifeOfVolatileFood;
 		if(animCount==0){
 			shrinkVolatileFood();
 		}
@@ -237,7 +242,7 @@ void idleAnimiation(void){
 
 		if(volatileFoodR!=0 && abs(newx-volatileFoodX)<snakeWidth*2+volatileFoodR && abs(newy-volatileFoodY)<snakeWidth*2+volatileFoodR){
 			printf("Volatile food eaten \n");
-			score += 10*volatileFoodR;
+			score += VolatileFoodScoreRatio *volatileFoodR;
 
 			char text[50];
 			sprintf(text,"Score = %d",score);
@@ -245,15 +250,15 @@ void idleAnimiation(void){
 			
 			eraseVolatileFood();
 			volatileFoodR=0;
-			countToGiveVolatileFood = 5;
+			stepsRemaningForVolatileFood = countToGiveVolatileFood;
 			
 		}
 
 		if( abs(newx-foodX)<snakeWidth*2 && abs(newy-foodY)<snakeWidth*2){
-				score++;
+				score += scoreRatio;
 
-				countToGiveVolatileFood--;
-				printf(" count ot give food = %d\n",countToGiveVolatileFood);
+				stepsRemaningForVolatileFood--;
+				//printf(" count ot give food = %d\n",countToGiveVolatileFood);
 //				printf("Your Score = %d\n",score);
 				char text[50];
 				sprintf(text,"Score = %d",score);
