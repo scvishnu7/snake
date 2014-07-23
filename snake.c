@@ -90,7 +90,7 @@ void printText(int x, int y, char *text) {
 
 	}
 	glColor3f(1.0,1.0,1.0);
-	printf(" prev = %s curr = %s\n",prevText, text);
+//	printf(" prev = %s curr = %s\n",prevText, text);
 	if(prevText != NULL)
 		strcpy(prevText,text);
 	glFlush();
@@ -209,7 +209,7 @@ void idleAnimiation(void){
 	if(stepsRemaningForVolatileFood==0){
 		eraseVolatileFood();
 		stepsRemaningForVolatileFood = countToGiveVolatileFood;
-		printf("Present volatile food \n");
+	//	printf("Present volatile food \n");
 		volatileFoodX = rand()%gridX;
 		volatileFoodY = rand()%gridY;
 		volatileFoodR = SizeOfVolatileFood;
@@ -241,7 +241,7 @@ void idleAnimiation(void){
 		}
 
 		if(volatileFoodR!=0 && abs(newx-volatileFoodX)<snakeWidth*2+volatileFoodR && abs(newy-volatileFoodY)<snakeWidth*2+volatileFoodR){
-			printf("Volatile food eaten \n");
+	//		printf("Volatile food eaten \n");
 			score += VolatileFoodScoreRatio *volatileFoodR;
 
 			char text[50];
